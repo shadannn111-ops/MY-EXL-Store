@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXL Store - Home</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* PROFESSIONAL QUANTITY SELECTOR  */
+        .qty-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f5f7fa;
+            border-radius: 30px;
+            padding: 4px;
+            margin: 12px 0;
+            border: 1px solid #e8ecef;
+            transition: all 0.2s ease;
+        }
+        .qty-selector:hover {
+            border-color: #2874f0;
+            box-shadow: 0 2px 8px rgba(40,116,240,0.1);
+        }
+        .qty-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: white;
+            color: #2874f0;
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .qty-btn:hover {
+            background: #2874f0;
+            color: white;
+            transform: scale(1.05);
+        }
+        .qty-btn:active {
+            transform: scale(0.95);
+        }
+        .qty-value {
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+            color: #1a1a2e;
+            font-family: 'Segoe UI', monospace;
+        }
+        
+        /* ========== PROFESSIONAL ADD TO CART BUTTON ========== */
+        .add-to-cart {
+            width: 100%;
+            background: linear-gradient(135deg, #fb641b 0%, #f85a0e 100%);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .add-to-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251,100,27,0.3);
+        }
+        .add-to-cart.added {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            cursor: default;
+        }
+        .add-to-cart.added:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* ========== FILTER BUTTON - LEFT BOTTOM PROFESSIONAL ========== */
+        .filter-fab {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2874f0 0%, #1a5cd8 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 22px;
+        }
+        .filter-fab:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* ========== FILTER SIDEBAR ========== */
+        .filter-sidebar {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100vh;
+            background: white;
+            z-index: 1002;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.15);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .filter-sidebar.open {
+            left: 0;
+        }
+        
+        .filter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            display: none;
+        }
+        .filter-overlay.active {
+            display: block;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2874f0;
+            margin-bottom: 20px;
+        }
+        .sidebar-header h3 {
+            font-size: 20px;
+            color: #333;
+            margin: 0;
+        }
+        .sidebar-header button {
+            background: none;
+            border: none;
+            color: #2874f0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .filter-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .filter-close:hover {
+            color: #ff6b6b;
+        }
+        
+        .filter-section {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+        .filter-section-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 15px;
+        }
+        .price-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .price-input {
+            flex: 1;
+        }
+        .price-input label {
+            font-size: 12px;
+            color: #878787;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .price-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .apply-price-btn {
+            width: 100%;
+            background: #2874f0;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .apply-price-btn:hover {
+            background: #1f5cd6;
+        }
+        .category-list {
+            list-style: none;
+        }
+        .category-list li {
+            padding: 10px 0;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            transition: 0.2s;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .category-list li:hover {
+            color: #2874f0;
+            padding-left: 5px;
+        }
+        .category-list li.active {
+            color: #2874f0;
+            font-weight: 600;
+        }
+        
+        .discount-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            background: white;
+        }
+        
+        /* ========== LIVE TOAST NOTIFICATION ========== */
+        .live-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 14px 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 9999;
+            animation: slideInRight 0.4s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-left: 5px solid #f59e0b;
+            max-width: 350px;
+            backdrop-filter: blur(8px);
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+        .live-toast i {
+            font-size: 24px;
+            color: #f59e0b;
+        }
+        .live-toast strong {
+            color: #f59e0b;
+        }
+        .live-toast .time-ago {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                width: 280px;
+            }
+            .filter-fab {
+                bottom: 20px;
+                left: 20px;
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+            .qty-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 18px;
+            }
+            .live-toast {
+                bottom: 15px;
+                right: 15px;
+                left: 15px;
+                max-width: none;
+                padding: 12px 16px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">EXL <span>Store</span></div>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search products...">
+                    <button onclick="searchProducts()">🔍 Search</button>
+                </div>
+                <div class="nav-links" id="navLinks"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Bar -->
+    <div class="categories-bar">
+        <div class="container">
+            <div class="categories" id="categories">
+                <div class="category-item active" data-cat="all">🛍️ All</div>
+                <div class="category-item" data-cat="mobiles">📱 Mobiles</div>
+                <div class="category-item" data-cat="fashion">👕 Fashion</div>
+                <div class="category-item" data-cat="beauty">🧴 Beauty</div>
+                <div class="category-item" data-cat="gadgets">🎧 Gadgets</div>
+                <div class="category-item" data-cat="appliances">🔌 Appliances</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="banner">
+            <h1>🔥 Great Indian Sale 🔥</h1>
+            <p>Up to 70% off + Extra 10% for Members | Free Shipping on all orders</p>
+        </div>
+
+        <!-- PRODUCTS GRID -->
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- FILTER BUTTON -->
+    <button class="filter-fab" onclick="toggleFilter()">
+        <i class="fas fa-sliders-h"></i>
+    </button>
+
+    <!-- FILTER SIDEBAR -->
+    <div class="filter-overlay" id="filterOverlay" onclick="closeFilter()"></div>
+    <div class="filter-sidebar" id="filterSidebar">
+        <button class="filter-close" onclick="closeFilter()">✕</button>
+        
+        <div class="sidebar-header">
+            <h3><i class="fas fa-filter"></i> Filters</h3>
+            <button onclick="clearAllFilters()">Clear All</button>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-section-title">💰 Price Range</div>
+            <div class="price-inputs">
+                <div class="price-input">
+                    <label>Min (₹)</label>
+                    <input type="number" id="minPrice" placeholder="0" value="0" step="100">
+                </div>
+                <div class="price-input">
+                    <label>Max (₹)</label>
+                    <input type="number" id="maxPrice" placeholder="150000" value="150000" step="100">
+                </div>
+            </div>
+            <button class="apply-price-btn" onclick="applyPriceFilter()">Apply</button>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-section-title">📂 Categories</div>
+            <ul class="category-list" id="categoryFilterList">
+                <li data-cat="all" class="active">All Products</li>
+                <li data-cat="mobiles">📱 Mobiles & Tablets</li>
+                <li data-cat="fashion">👕 Fashion</li>
+                <li data-cat="beauty">💄 Beauty & Personal Care</li>
+                <li data-cat="gadgets">🎧 Gadgets & Electronics</li>
+                <li data-cat="appliances">🔌 Home Appliances</li>
+            </ul>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-section-title">🏷️ Discount</div>
+            <select id="discountFilter" class="discount-select" onchange="applyDiscountFilter()">
+                <option value="0">All Discounts</option>
+                <option value="10">10% and above</option>
+                <option value="20">20% and above</option>
+                <option value="30">30% and above</option>
+                <option value="40">40% and above</option>
+                <option value="50">50% and above</option>
+                <option value="60">60% and above</option>
+                <option value="70">70% and above</option>
+            </select>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                © 2026 EXL Store. All rights reserved. | India's Favorite Shopping Destination
+            </div>
+        </div>
+    </footer>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script>
+        // ========== 50 PRODUCTS ==========
+        let allProducts = [
+            { id: 1, name: "Samsung Galaxy S23", category: "mobiles", price: 64999, original: 74999, image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400", brand: "Samsung" },
+            { id: 2, name: "iPhone 15 Pro", category: "mobiles", price: 134900, original: 149900, image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400", brand: "Apple" },
+            { id: 3, name: "OnePlus 12", category: "mobiles", price: 64999, original: 69999, image: "https://tse1.mm.bing.net/th/id/OIP.uN5mBwzrbp8e59oxl33mbwHaHa?pid=Api&P=0&h=180", brand: "OnePlus" },
+            { id: 4, name: "Google Pixel 8", category: "mobiles", price: 75999, original: 79999, image: "https://tse1.mm.bing.net/th/id/OIP.DFRyNvBSaG6iHW_CthuARgHaJN?pid=Api&P=0&h=180", brand: "Google" },
+            { id: 5, name: "Xiaomi 14 Pro", category: "mobiles", price: 59999, original: 64999, image: "https://tse1.mm.bing.net/th/id/OIP.9WQgckQPsksVfP_R0S2lkAHaHa?pid=Api&P=0&h=180", brand: "Xiaomi" },
+            { id: 6, name: "Nothing Phone 2", category: "mobiles", price: 44999, original: 49999, image: "https://tse3.mm.bing.net/th/id/OIP.BRZ91pZ1ZyRCiL2Sg-OBnAHaHT?pid=Api&P=0&h=180", brand: "Nothing" },
+            { id: 7, name: "Motorola Edge 40", category: "mobiles", price: 29999, original: 34999, image: "https://tse1.mm.bing.net/th/id/OIP.xR3AraGJhNK29ZD1zRKMfwHaJe?pid=Api&P=0&h=180", brand: "Motorola" },
+            { id: 8, name: "Vivo X100 Pro", category: "mobiles", price: 54999, original: 59999, image: "https://tse4.mm.bing.net/th/id/OIP.h-QayYc0R-9ujHYNtGJQzwHaHa?pid=Api&P=0&h=180", brand: "Vivo" },
+            { id: 9, name: "Oppo Find N3", category: "mobiles", price: 84999, original: 89999, image: "https://tse2.mm.bing.net/th/id/OIP.papsa7K-Z0VjTmZhJlG8OQHaFj?pid=Api&P=0&h=180", brand: "Oppo" },
+            { id: 10, name: "Realme GT 5", category: "mobiles", price: 42999, original: 47999, image: "https://tse4.mm.bing.net/th/id/OIP.4TikGkme-9T7OBGLeh4e8AHaEK?pid=Api&P=0&h=180", brand: "Realme" },
+            { id: 11, name: "Levi's Men Jeans", category: "fashion", price: 1799, original: 2999, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400", brand: "Levi's" },
+            { id: 12, name: "US Polo T-Shirt", category: "fashion", price: 899, original: 1499, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400", brand: "US Polo" },
+            { id: 13, name: "Peter England Shirt", category: "fashion", price: 1299, original: 2199, image: "https://tse4.mm.bing.net/th/id/OIP.K6yIjQ3H1_fpgMOSqv1A8wHaI0?pid=Api&P=0&h=180", brand: "Peter England" },
+            { id: 14, name: "Nike Air Max", category: "fashion", price: 5499, original: 6999, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", brand: "Nike" },
+            { id: 15, name: "Adidas Ultraboost", category: "fashion", price: 4999, original: 5999, image: "https://images.unsplash.com/photo-1556909211-36987daf7b4d?w=400", brand: "Adidas" },
+            { id: 16, name: "Women's Silk Saree", category: "fashion", price: 1999, original: 3999, image: "https://tse1.mm.bing.net/th/id/OIP.bDdt99F4ISg5BLh8j-DtYQHaEG?pid=Api&P=0&h=180", brand: "Manyavar" },
+            { id: 17, name: "Women's Cotton Kurti", category: "fashion", price: 799, original: 1499, image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400", brand: "Biba" },
+            { id: 18, name: "Women's Jeans", category: "fashion", price: 1299, original: 2299, image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400", brand: "Levi's" },
+            { id: 19, name: "Women's Top", category: "fashion", price: 599, original: 999, image: "https://tse1.mm.bing.net/th/id/OIP.Rh3r1dJeBEufalm7tEi9dgHaJ3?pid=Api&P=0&h=180", brand: "Zara" },
+            { id: 20, name: "Leather Handbag", category: "fashion", price: 1499, original: 2999, image: "https://tse1.mm.bing.net/th/id/OIP.iN4j03FZ4LMx-F7VuiYX_gHaIt?pid=Api&P=0&h=180", brand: "Lavie" },
+            { id: 21, name: "Face Wash", category: "beauty", price: 299, original: 499, image: "https://tse3.mm.bing.net/th/id/OIP.lKzch_efmRiGGrOhUeZ3gwAAAA?pid=Api&P=0&h=180", brand: "Garnier" },
+            { id: 22, name: "Moisturizer Cream", category: "beauty", price: 449, original: 699, image: "https://tse3.mm.bing.net/th/id/OIP.o2axbiDudmn8E3oaE00o4wHaHa?pid=Api&P=0&h=180", brand: "Cetaphil" },
+            { id: 23, name: "Face Cream", category: "beauty", price: 199, original: 299, image: "https://tse4.mm.bing.net/th/id/OIP.AhOYp8J0sQI_usVaT_6QjAHaHa?pid=Api&P=0&h=180", brand: "Nivea" },
+            { id: 24, name: "Lip Balm", category: "beauty", price: 149, original: 249, image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400", brand: "Garnier" },
+            { id: 25, name: "Sunscreen", category: "beauty", price: 399, original: 599, image: "https://tse4.mm.bing.net/th/id/OIP.LPoYZsMNXSigB8jVjrVFmwHaHa?pid=Api&P=0&h=180", brand: "Lakme" },
+            { id: 26, name: "Foundation", category: "beauty", price: 599, original: 899, image: "https://tse4.mm.bing.net/th/id/OIP.enSJxVuzzCpUngmwqt0S8QHaHa?pid=Api&P=0&h=180", brand: "Lakme" },
+            { id: 27, name: "Lipstick", category: "beauty", price: 449, original: 699, image: "https://tse3.mm.bing.net/th/id/OIP.MiRZCoSobyK_8a7XiBfaXwHaHa?pid=Api&P=0&h=180", brand: "Maybelline" },
+            { id: 28, name: "Shampoo", category: "beauty", price: 399, original: 599, image: "https://tse4.mm.bing.net/th/id/OIP.AWk68Vn5fdXOIJlAKGtSHQHaHa?pid=Api&P=0&h=180", brand: "L'Oreal" },
+            { id: 29, name: "Body Wash", category: "beauty", price: 349, original: 499, image: "https://tse1.mm.bing.net/th/id/OIP.wZw3AKKyU1SODz9SIN85PwHaHa?pid=Api&P=0&h=180", brand: "Dove" },
+            { id: 30, name: "Face Serum", category: "beauty", price: 799, original: 1299, image: "https://tse1.mm.bing.net/th/id/OIP.C0PBrn5UwT8-dSKuI_-lvwHaHa?pid=Api&P=0&h=180", brand: "Ponds" },
+            { id: 31, name: "Wireless Headphones", category: "gadgets", price: 1999, original: 3999, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400", brand: "boAt" },
+            { id: 32, name: "Smart Watch", category: "gadgets", price: 2999, original: 5999, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400", brand: "Noise" },
+            { id: 33, name: "Bluetooth Speaker", category: "gadgets", price: 3499, original: 5999, image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400", brand: "JBL" },
+            { id: 34, name: "Power Bank", category: "gadgets", price: 1499, original: 2499, image: "https://tse4.mm.bing.net/th/id/OIP.RppXV3LogGQlg5iD5Zf6MwHaHa?pid=Api&P=0&h=180", brand: "Mi" },
+            { id: 35, name: "USB Pendrive", category: "gadgets", price: 599, original: 999, image: "https://tse1.mm.bing.net/th/id/OIP.UnCleF5pUmCbak151C334QHaGN?pid=Api&P=0&h=180", brand: "SanDisk" },
+            { id: 36, name: "Wireless Mouse", category: "gadgets", price: 799, original: 1299, image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400", brand: "Logitech" },
+            { id: 37, name: "Gaming Keyboard", category: "gadgets", price: 2999, original: 4999, image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400", brand: "Zebronics" },
+            { id: 38, name: "Printer", category: "gadgets", price: 7499, original: 9999, image: "https://tse1.mm.bing.net/th/id/OIP.hS1pr69DlFY9LTrZGrCN-QHaEG?pid=Api&P=0&h=180", brand: "Canon" },
+            { id: 39, name: "Action Camera", category: "gadgets", price: 29999, original: 35999, image: "https://tse3.mm.bing.net/th/id/OIP.1vM7T3nEYdWT4ydyzZ5zygHaFW?pid=Api&P=0&h=180", brand: "GoPro" },
+            { id: 40, name: "Drone", category: "gadgets", price: 54999, original: 59999, image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400", brand: "DJI" },
+            { id: 41, name: "Mixer Grinder", category: "appliances", price: 2799, original: 3999, image: "https://tse3.mm.bing.net/th/id/OIP.-1JGM3VPa-miUs142z5nzAHaEl?pid=Api&P=0&h=180", brand: "Bajaj" },
+            { id: 42, name: "Pressure Cooker", category: "appliances", price: 1999, original: 2999, image: "https://tse1.mm.bing.net/th/id/OIP.fuZipKghSKgoiNtc7Z761QHaE0?pid=Api&P=0&h=180", brand: "Prestige" },
+            { id: 43, name: "Ceiling Fan", category: "appliances", price: 2299, original: 3499, image: "https://tse2.mm.bing.net/th/id/OIP.-m7_WU8ieo86ZaCgV1W7SQHaHa?pid=Api&P=0&h=180", brand: "Havells" },
+            { id: 44, name: "Refrigerator", category: "appliances", price: 25999, original: 29999, image: "https://tse2.mm.bing.net/th/id/OIP.c88-Ou9xYiWWpK00F5wIYgHaE6?pid=Api&P=0&h=180", brand: "LG" },
+            { id: 45, name: "Washing Machine", category: "appliances", price: 15999, original: 21999, image: "https://tse1.mm.bing.net/th/id/OIP.ZcuAqIbXzF3Ke21tJbjrQAHaLH?pid=Api&P=0&h=180", brand: "Samsung" },
+            { id: 46, name: "Microwave Oven", category: "appliances", price: 8999, original: 12999, image: "https://tse4.mm.bing.net/th/id/OIP.1766BbOQEA4H8BkjbHQK5AHaEt?pid=Api&P=0&h=180", brand: "IFB" },
+            { id: 47, name: "Steam Iron", category: "appliances", price: 1299, original: 1999, image: "https://tse3.mm.bing.net/th/id/OIP.flGGNA0c8UWs8vGNFOyJ3AHaGt?pid=Api&P=0&h=180", brand: "Philips" },
+            { id: 48, name: "Water Purifier", category: "appliances", price: 10999, original: 14999, image: "https://tse2.mm.bing.net/th/id/OIP._S7uwy4fOIoQDGRc2aUaIgHaHa?pid=Api&P=0&h=180", brand: "Kent" },
+            { id: 49, name: "Toaster", category: "appliances", price: 1999, original: 2999, image: "https://tse4.mm.bing.net/th/id/OIP.XEZVtWGQmc8_qTxzeoixTQHaGk?pid=Api&P=0&h=180", brand: "Morphy" },
+            { id: 50, name: "Vacuum Cleaner", category: "appliances", price: 3999, original: 5999, image: "https://tse2.mm.bing.net/th/id/OIP.PKRlGhHpdo75TUJ25UgxgAHaF_?pid=Api&P=0&h=180", brand: "Eureka" }
+        ];
+
+        // Helper function to format price with commas (Indian format)
+        function formatIndianPrice(price) {
+            return price.toLocaleString('en-IN');
+        }
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentCategory = 'all';
+        let minPrice = 0;
+        let maxPrice = 150000;
+        let minDiscount = 0;
+        let searchTerm = '';
+        let tempQuantities = {};
+        let notificationInterval = null;
+
+        // ========== 60+ UNIQUE INDIAN NAMES ==========
+        const indianNames = [
+            'Rahul ', 'Priya', 'Amit ', 'Neha', 'Vikram ', 
+            'Anjali', 'Rohan ', 'Sneha', 'Kunal ', 'Divya',
+            'Manish ', 'Kavya ', 'Rajesh ', 'Simran', 'Arjun ',
+            'Pooja ', 'Siddharth ', 'Meera ', 'Ankit ', 'garwal',
+            'Varun', 'Shreya ', 'Tarun ', 'Nikita ', 'Gaurav ',
+            'Isha ', 'Abhishek ', 'Riya ', 'Saurabh ', 'Tanya',
+            'Harsh ', 'Swati', 'Karan ', 'Preeti ', 'Mohit ',
+            'Nidhi', 'Rishabh', 'Shivani ', 'Yash ', 'Sakshi',
+            'Aditya', 'Shruti', 'Dhruv ', 'Anushka ', 'Kartik',
+            'Sanya ', 'Vishal', 'Rashmi ', 'Nikhil ', 'Karishma',
+            'Pankaj ', 'Raveena ', 'Ayushmann ', 'Kriti Sanon', 'Vicky ',
+            'Taapser', 'Rajkummar ', 'Bhumi', 'khansahab', 'Alia',
+            'Ranveer ', 'Deepika ', 'Shahid Kapoor', 'Karan', 'Sidharth'
+        ];
+
+        // 25+ Indian Cities
+        const indianCities = [
+            'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Pune', 'Hyderabad', 
+            'Ahmedabad', 'Jaipur', 'Lucknow', 'Nagpur', 'Indore', 'Bhopal', 'Surat', 
+            'Vadodara', 'Patna', 'Thane', 'Agra', 'Nashik', 'Ranchi', 'Chandigarh',
+            'Bhiwandi', 'Noida', 'Gurgaon', 'Ghaziabad', 'Faridabad', 'Meerut'
+        ];
+
+        function getRandomTimeAgo() {
+            const times = ['just now', '2 min ago', '5 min ago', '10 min ago', '15 min ago', '30 min ago'];
+            return times[Math.floor(Math.random() * times.length)];
+        }
+
+        function showLiveNotification(productName) {
+            const randomName = indianNames[Math.floor(Math.random() * indianNames.length)];
+            const randomCity = indianCities[Math.floor(Math.random() * indianCities.length)];
+            const timeAgo = getRandomTimeAgo();
+            
+            const toast = document.createElement('div');
+            toast.className = 'live-toast';
+            toast.innerHTML = `
+                <i class="fas fa-shopping-cart"></i>
+                <div style="flex: 1;">
+                    <div><strong>🔥 ${randomName}</strong> from <strong>${randomCity}</strong></div>
+                    <div>purchased <strong>${productName}</strong>!</div>
+                    <div class="time-ago"><i class="far fa-clock"></i> ${timeAgo}</div>
+                </div>
+                <i class="fas fa-bell" style="font-size: 14px; opacity: 0.7;"></i>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Start automatic notifications every 10 seconds
+        function startAutomaticNotifications() {
+            if (notificationInterval) clearInterval(notificationInterval);
+            
+            notificationInterval = setInterval(() => {
+                const randomProduct = allProducts[Math.floor(Math.random() * allProducts.length)];
+                showLiveNotification(randomProduct.name);
+            }, 10000);
+        }
+
+        function getTempQuantity(id) { return tempQuantities[id] || 1; }
+        function setTempQuantity(id, qty) { if (qty < 1) qty = 1; tempQuantities[id] = qty; }
+
+        function updateHeader() {
+            let navLinks = document.getElementById('navLinks');
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            let userEmail = localStorage.getItem('userEmail');
+            
+            if(isLoggedIn === 'true' && userEmail) {
+                let shortEmail = userEmail.split('@')[0];
+                navLinks.innerHTML = `
+                    <div class="user-info">
+                        <span>👤 ${shortEmail}</span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                    <a href="login.html">Login</a>
+                    <a href="main.html">Home</a>
+                    <a href="cart.html">Cart <span class="cart-count">${cart.length}</span></a>
+                    <a href="payment.html">Payment</a>
+                    <a href="final.html">Final</a>
+                `;
+            } else {
+                navLinks.innerHTML = `<a href="login.html">Login</a><a href="main.html">Home</a><a href="cart.html">Cart <span class="cart-count">${cart.length}</span></a><a href="payment.html">Payment</a><a href="final.html">Final</a>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('cart');
+            window.location.href = 'login.html';
+        }
+
+        function toggleFilter() {
+            document.getElementById('filterSidebar').classList.toggle('open');
+            document.getElementById('filterOverlay').classList.toggle('active');
+        }
+
+        function closeFilter() {
+            document.getElementById('filterSidebar').classList.remove('open');
+            document.getElementById('filterOverlay').classList.remove('active');
+        }
+
+        function displayProducts() {
+            let grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            
+            let filtered = currentCategory === 'all' ? allProducts : allProducts.filter(p => p.category === currentCategory);
+            filtered = filtered.filter(p => p.price >= minPrice && p.price <= maxPrice);
+            
+            if (minDiscount > 0) {
+                filtered = filtered.filter(p => {
+                    let discount = Math.round(((p.original - p.price) / p.original) * 100);
+                    return discount >= minDiscount;
+                });
+            }
+            
+            if (searchTerm) {
+                filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="no-results" style="text-align:center; padding:50px; background:white; border-radius:8px;">😕 No products found! Try adjusting filters.</div>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                let discount = Math.round(((p.original - p.price) / p.original) * 100);
+                let isInCart = cart.some(item => item.id === p.id);
+                let currentQty = getTempQuantity(p.id);
+                
+                // FORMAT PRICES WITH COMMAS - FIXED HERE
+                let formattedPrice = formatIndianPrice(p.price);
+                let formattedOriginal = formatIndianPrice(p.original);
+                
+                let card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-badge">${discount}% OFF</div>
+                    <img src="${p.image}" class="product-image" loading="lazy">
+                    <div class="product-info">
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-price">
+                            <span class="current-price">₹${formattedPrice}</span>
+                            <span class="original-price">₹${formattedOriginal}</span>
+                            <span class="discount">${discount}%</span>
+                        </div>
+                        <div class="qty-selector">
+                            <button class="qty-btn" onclick="event.stopPropagation(); changeQuantity(${p.id}, -1)">−</button>
+                            <span class="qty-value" id="qty-${p.id}">${currentQty}</span>
+                            <button class="qty-btn" onclick="event.stopPropagation(); changeQuantity(${p.id}, 1)">+</button>
+                        </div>
+                        <button class="add-to-cart ${isInCart ? 'added' : ''}" onclick="addToCartWithQuantity(${p.id}, this)" ${isInCart ? 'disabled' : ''}>
+                            ${isInCart ? '✓ Added to Cart' : '🛒 Add to Cart'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function changeQuantity(productId, delta) {
+            let currentQty = getTempQuantity(productId);
+            let newQty = currentQty + delta;
+            if (newQty < 1) newQty = 1;
+            setTempQuantity(productId, newQty);
+            const qtySpan = document.getElementById(`qty-${productId}`);
+            if (qtySpan) qtySpan.innerText = newQty;
+        }
+
+        function addToCartWithQuantity(productId, button) {
+            let product = allProducts.find(p => p.id === productId);
+            if (cart.some(item => item.id === productId)) return;
+            
+            let quantityToAdd = getTempQuantity(productId);
+            cart.push({ ...product, quantity: quantityToAdd });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            button.classList.add('added');
+            button.disabled = true;
+            button.innerHTML = '✓ Added to Cart';
+            updateHeader();
+            
+            // NO NOTIFICATION ON ADD TO CART - REMOVED
+        }
+
+        function filterCategory(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.category-item').forEach(item => item.classList.remove('active'));
+            if (element) element.classList.add('active');
+            document.querySelectorAll('.category-list li').forEach(li => li.classList.remove('active'));
+            document.querySelector(`.category-list li[data-cat="${category}"]`)?.classList.add('active');
+            displayProducts();
+            closeFilter();
+        }
+
+        function searchProducts() {
+            searchTerm = document.getElementById('searchInput').value;
+            displayProducts();
+        }
+
+        function applyPriceFilter() {
+            minPrice = parseInt(document.getElementById('minPrice').value) || 0;
+            maxPrice = parseInt(document.getElementById('maxPrice').value) || 150000;
+            if (minPrice > maxPrice) [minPrice, maxPrice] = [maxPrice, minPrice];
+            document.getElementById('minPrice').value = minPrice;
+            document.getElementById('maxPrice').value = maxPrice;
+            displayProducts();
+            closeFilter();
+        }
+
+        function applyDiscountFilter() {
+            minDiscount = parseInt(document.getElementById('discountFilter').value) || 0;
+            displayProducts();
+            closeFilter();
+        }
+
+        function clearAllFilters() {
+            document.getElementById('minPrice').value = 0;
+            document.getElementById('maxPrice').value = 150000;
+            document.getElementById('discountFilter').value = '0';
+            document.getElementById('searchInput').value = '';
+            minPrice = 0;
+            maxPrice = 150000;
+            minDiscount = 0;
+            searchTerm = '';
+            currentCategory = 'all';
+            
+            document.querySelectorAll('.category-item').forEach(item => item.classList.remove('active'));
+            document.querySelector('.category-item[data-cat="all"]').classList.add('active');
+            document.querySelectorAll('.category-list li').forEach(li => li.classList.remove('active'));
+            document.querySelector('.category-list li[data-cat="all"]').classList.add('active');
+            
+            displayProducts();
+            closeFilter();
+        }
+
+        function checkLogin() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
+        }
+
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', () => filterCategory(item.dataset.cat, item));
+        });
+        
+        document.querySelectorAll('.category-list li').forEach(item => {
+            item.addEventListener('click', () => {
+                filterCategory(item.dataset.cat, item);
+                closeFilter();
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchProducts();
+        });
+
+        checkLogin();
+        updateHeader();
+        displayProducts();
+        
+        // Start automatic notifications every 10 seconds
+        startAutomaticNotifications();
+    </script>
+</body>
+</html>

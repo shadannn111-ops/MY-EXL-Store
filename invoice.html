@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXL Store - Tax Invoice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        body {
+            background: #e0e0e0;
+            padding: 40px 20px;
+        }
+        .invoice-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .invoice-header {
+            background: linear-gradient(135deg, #2874f0 0%, #1f5cd6 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .invoice-header h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        .invoice-header p {
+            opacity: 0.9;
+        }
+        .invoice-body {
+            padding: 30px;
+        }
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2874f0;
+            border-bottom: 2px solid #2874f0;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        .company-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .company-details h3 {
+            color: #2874f0;
+            margin-bottom: 8px;
+        }
+        .company-details p {
+            color: #666;
+            font-size: 13px;
+            margin: 3px 0;
+        }
+        .order-info {
+            text-align: right;
+        }
+        .order-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .order-info strong {
+            color: #333;
+        }
+        .customer-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .customer-info h4 {
+            color: #2874f0;
+            margin-bottom: 10px;
+        }
+        .customer-info p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .items-table th {
+            background: #2874f0;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+        .items-table .total-row {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .summary {
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        .summary-line {
+            display: flex;
+            justify-content: flex-end;
+            gap: 30px;
+            margin: 8px 0;
+        }
+        .summary-line span:first-child {
+            color: #666;
+        }
+        .summary-line span:last-child {
+            font-weight: bold;
+            color: #333;
+        }
+        .grand-total {
+            font-size: 20px;
+            color: #fb641b;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #2874f0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }
+        .print-btn {
+            background: #2874f0;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 30px;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .print-btn:hover {
+            background: #1f5cd6;
+            transform: translateY(-2px);
+        }
+        .button-container {
+            text-align: center;
+            background: white;
+            padding-bottom: 20px;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .print-btn {
+                display: none;
+            }
+            .button-container {
+                display: none;
+            }
+            .invoice-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <h1>EXL STORE</h1>
+            <p>Your Trusted Shopping Partner</p>
+            <p>GSTIN: 27AAACA1234E1ZR</p>
+        </div>
+        
+        <div class="invoice-body" id="invoiceBody">
+            <div class="invoice-title">TAX INVOICE</div>
+            
+            <div class="company-info">
+                <div class="company-details">
+                    <h3>EXL Store</h3>
+                    <p>1982, GN Nagar,</p>
+                    <p>Bhiwandi - 421302, Maharashtra, India</p>
+                    <p>Email: exlstoreofficial@gmail.com | Phone: +91 98765 43210</p>
+                </div>
+                <div class="order-info" id="orderInfo">
+                    <!-- Dynamic order info will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="customer-info" id="customerInfo">
+                <!-- Dynamic customer info will be inserted here -->
+            </div>
+            
+            <table class="items-table" id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Price (₹)</th>
+                        <th>Total (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                    <!-- Dynamic items will be inserted here -->
+                </tbody>
+            </table>
+            
+            <div class="summary" id="summary">
+                <!-- Dynamic summary will be inserted here -->
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button class="print-btn" onclick="window.print()">🖨️ Print Invoice / Save as PDF</button>
+        </div>
+        
+        <div class="footer">
+            <p>This is a computer generated invoice and does not require physical signature.</p>
+            <p>For any queries, please contact exlstoreofficial@gmail.com | Thank you for shopping with us!</p>
+        </div>
+    </div>
+
+    <script>
+        // Get invoice data from localStorage
+        let invoiceData = JSON.parse(localStorage.getItem('invoiceData')) || {};
+        
+        // If no data, try to get from lastPayment
+        if (!invoiceData.orderNumber) {
+            let lastPayment = JSON.parse(localStorage.getItem('lastPayment')) || {};
+            let lastCart = JSON.parse(localStorage.getItem('lastCart')) || [];
+            invoiceData = {
+                orderNumber: lastPayment.orderNumber || 'EXL' + Date.now(),
+                orderDate: new Date().toLocaleString(),
+                paymentMethod: lastPayment.method || 'Online',
+                transactionId: lastPayment.transactionId || 'TXN' + Date.now(),
+                totalAmount: lastPayment.amount || '₹0',
+                customerName: lastPayment.address?.fullName || localStorage.getItem('userName') || 'Guest',
+                customerMobile: lastPayment.address?.mobile || localStorage.getItem('userMobile') || 'Not provided',
+                customerAddress: lastPayment.address?.address || '123, Main Street, Mumbai',
+                customerCity: lastPayment.address?.city || localStorage.getItem('userCity') || 'Mumbai',
+                customerState: lastPayment.address?.state || localStorage.getItem('userState') || 'Maharashtra',
+                customerPincode: lastPayment.address?.pincode || localStorage.getItem('userPincode') || '400001',
+                items: lastCart,
+                subtotal: 0
+            };
+            // Calculate subtotal
+            invoiceData.subtotal = 0;
+            invoiceData.items.forEach(item => {
+                let qty = item.quantity || 1;
+                invoiceData.subtotal += item.price * qty;
+            });
+        }
+        
+        // Calculate totals
+        let subtotal = invoiceData.subtotal || 0;
+        let shipping = 0;
+        let tax = 0;
+        let grandTotal = subtotal;
+        
+        // Display Order Info
+        document.getElementById('orderInfo').innerHTML = `
+            <p><strong>Order Number:</strong> ${invoiceData.orderNumber}</p>
+            <p><strong>Order Date:</strong> ${invoiceData.orderDate}</p>
+            <p><strong>Payment Method:</strong> ${invoiceData.paymentMethod}</p>
+            <p><strong>Transaction ID:</strong> ${invoiceData.transactionId}</p>
+        `;
+        
+        // Display Customer Info
+        document.getElementById('customerInfo').innerHTML = `
+            <h4><i class="fas fa-user"></i> Billing & Shipping Address</h4>
+            <p><strong>${invoiceData.customerName}</strong></p>
+            <p>${invoiceData.customerAddress}</p>
+            <p>${invoiceData.customerCity}, ${invoiceData.customerState} - ${invoiceData.customerPincode}</p>
+            <p>Mobile: ${invoiceData.customerMobile}</p>
+        `;
+        
+        // Display Items
+        let itemsHtml = '';
+        let slNo = 1;
+        invoiceData.items.forEach(item => {
+            let qty = item.quantity || 1;
+            let total = item.price * qty;
+            itemsHtml += `
+                <tr>
+                    <td>${slNo}</td>
+                    <td>${item.name}</td>
+                    <td>${qty}</td>
+                    <td>₹${item.price.toLocaleString()}</td>
+                    <td>₹${total.toLocaleString()}</td>
+                </tr>
+            `;
+            slNo++;
+        });
+        
+        document.getElementById('itemsBody').innerHTML = itemsHtml || '<tr><td colspan="5" style="text-align:center;">No items found</td></tr>';
+        
+        // Display Summary
+        document.getElementById('summary').innerHTML = `
+            <div class="summary-line">
+                <span>Subtotal:</span>
+                <span>₹${subtotal.toLocaleString()}</span>
+            </div>
+            <div class="summary-line">
+                <span>Shipping Charges:</span>
+                <span>₹0</span>
+            </div>
+            <div class="summary-line">
+                <span>GST (0%):</span>
+                <span>₹0</span>
+            </div>
+            <div class="summary-line grand-total">
+                <span>Grand Total:</span>
+                <span>₹${grandTotal.toLocaleString()}</span>
+            </div>
+        `;
+        
+        // Add Font Awesome for icons (optional)
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+            document.head.appendChild(link);
+        }
+    </script>
+</body>
+</html>

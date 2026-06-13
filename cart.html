@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXL Store - Cart</title>
+    <link rel="stylesheet" href="cart.css">
+    <style>
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #2874f0;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        .qty-btn:hover {
+            background: #1f5cd6;
+            transform: scale(1.05);
+        }
+        .qty-value {
+            font-weight: bold;
+            min-width: 35px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .item-info {
+            flex: 2;
+        }
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .remove-btn:hover {
+            background: #ff5252;
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+        .empty-cart i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 16px;
+        }
+        .summary-row.total {
+            font-weight: bold;
+            font-size: 22px;
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+            margin-top: 15px;
+            color: #fb641b;
+        }
+        .checkout-btn {
+            width: 100%;
+            background: #fb641b;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.2s;
+        }
+        .checkout-btn:hover {
+            background: #f85a0e;
+            transform: translateY(-2px);
+        }
+        .continue-btn {
+            display: block;
+            text-align: center;
+            background: #2874f0;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: 0.2s;
+        }
+        .continue-btn:hover {
+            background: #1f5cd6;
+        }
+        .free-shipping-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">EXL Store</div>
+                <div class="nav-links">
+                    <a href="login.html">🔐 Login</a>
+                    <a href="main.html">🏠 Home</a>
+                    <a href="cart.html">🛒 Cart</a>
+                    <a href="payment.html">💳 Payment</a>
+                    <a href="final.html">📋 Final</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">🛍️ Your Shopping Cart</h1>
+        <div class="cart-wrapper">
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-summary">
+                <h2>📊 Order Summary</h2>
+                <div class="summary-row">
+                    <span>🛒 Subtotal</span>
+                    <span id="subtotal">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>🚚 Shipping</span>
+                    <span style="color: #28a745;">₹0 <small>(Free)</small></span>
+                </div>
+                <div class="summary-row">
+                    <span>📋 Tax (GST)</span>
+                    <span style="color: #28a745;">₹0 <small>(No Tax)</small></span>
+                </div>
+                <div class="summary-row total">
+                    <span>💰 Total Amount</span>
+                    <span id="total">₹0</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">✅ Proceed to Payment</button>
+                <a href="main.html" class="continue-btn">🛍️ Continue Shopping</a>
+                <div class="free-shipping-badge">
+                    🎉 Free Shipping on all orders! No hidden charges.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function updateQuantity(index, delta) {
+            let newQty = (cart[index].quantity || 1) + delta;
+            if (newQty < 1) newQty = 1;
+            cart[index].quantity = newQty;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCart();
+        }
+
+        function displayCart() {
+            let container = document.getElementById('cartItems');
+            if(cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i>🛒</i>
+                        <h3>Your cart is empty!</h3>
+                        <p>Looks like you haven't added anything yet.</p>
+                        <a href="main.html" style="display: inline-block; margin-top: 15px; background: #2874f0; color: white; padding: 10px 25px; border-radius: 5px; text-decoration: none;">Start Shopping</a>
+                    </div>
+                `;
+                document.getElementById('subtotal').innerText = '₹0';
+                document.getElementById('total').innerText = '₹0';
+                return;
+            }
+            
+            let html = '';
+            let subtotal = 0;
+            
+            cart.forEach((item, index) => {
+                let qty = item.quantity || 1;
+                let itemTotal = item.price * qty;
+                subtotal += itemTotal;
+                html += `
+                    <div class="cart-item">
+                        <div class="item-info">
+                            <h3>${item.name}</h3>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="updateQuantity(${index}, -1)">−</button>
+                                <span class="qty-value">${qty}</span>
+                                <button class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                            </div>
+                            <div class="item-price">₹${itemTotal.toLocaleString()}</div>
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(${index})">🗑️ Remove</button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // NO TAX, NO SHIPPING - Sirf subtotal = total
+            let total = subtotal;
+            
+            document.getElementById('subtotal').innerHTML = `₹${subtotal.toLocaleString()}`;
+            document.getElementById('total').innerHTML = `₹${total.toLocaleString()}`;
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCart();
+        }
+
+        function checkout() {
+            if(cart.length > 0) {
+                window.location.href = 'payment.html';
+            } else {
+                alert('Your cart is empty! Add some products first.');
+            }
+        }
+
+        displayCart();
+    </script>
+</body>
+</html>

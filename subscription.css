@@ -1,0 +1,247 @@
+   * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        body {
+            background: #f1f3f6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            background: #2874f0;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .user-info {
+            background: #ffe500;
+            color: #2874f0;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .page-title {
+            margin: 40px 0 20px;
+            font-size: 32px;
+            color: #333;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        .plans-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0 60px;
+            flex-wrap: wrap;
+        }
+        .plan-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 30px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-color: #2874f0;
+        }
+        .plan-card.popular {
+            border: 2px solid #fb641b;
+            transform: scale(1.05);
+        }
+        .plan-card.popular:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fb641b;
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .plan-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .plan-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .plan-price {
+            font-size: 42px;
+            font-weight: 800;
+            color: #2874f0;
+            margin-bottom: 10px;
+        }
+        .plan-price span {
+            font-size: 16px;
+            color: #666;
+            font-weight: normal;
+        }
+        .plan-description {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .plan-features {
+            list-style: none;
+            margin: 25px 0;
+            text-align: left;
+        }
+        .plan-features li {
+            margin: 15px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+        .plan-features li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        .subscribe-btn {
+            background: #fb641b;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .subscribe-btn:hover {
+            background: #f85a0e;
+            transform: scale(1.02);
+        }
+        .subscribe-btn.processing {
+            background: #28a745;
+            cursor: wait;
+        }
+        .subscribe-btn.processing:hover {
+            background: #28a745;
+            transform: none;
+        }
+        .subscribe-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .plan-card.popular .subscribe-btn {
+            background: #2874f0;
+        }
+        .plan-card.popular .subscribe-btn:hover {
+            background: #1f5cd6;
+        }
+        .plan-card.popular .subscribe-btn.processing {
+            background: #28a745;
+        }
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .guarantee {
+            text-align: center;
+            margin: 40px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .guarantee p {
+            color: #666;
+            font-size: 16px;
+        }
+        .guarantee span {
+            color: #28a745;
+            font-weight: bold;
+        }
+        footer {
+            background: #172337;
+            color: white;
+            padding: 30px 0 15px;
+            margin-top: 40px;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #454545;
+            color: #878787;
+            font-size: 13px;
+        }

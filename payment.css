@@ -1,0 +1,819 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ========== HEADER STYLES ========== */
+header {
+    background: #1a1a2e;
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #ffe500 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 0;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ffe500;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.nav-links a:hover {
+    color: #ffe500;
+}
+
+.user-info {
+    background: linear-gradient(135deg, #ffe500 0%, #ffc107 100%);
+    color: #1a1a2e;
+    padding: 6px 18px;
+    border-radius: 30px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logout-btn {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #ff6b81;
+    transform: scale(1.02);
+}
+
+/* ========== PAGE TITLE ========== */
+.page-title {
+    margin: 30px 0 20px;
+    font-size: 36px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    font-weight: 700;
+}
+
+/* ========== PAYMENT WRAPPER ========== */
+.payment-wrapper {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.payment-methods {
+    flex: 2;
+    background: white;
+    border-radius: 28px;
+    padding: 35px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease;
+}
+
+.order-summary {
+    flex: 1;
+    background: white;
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+    transition: transform 0.3s ease;
+}
+
+.order-summary:hover {
+    transform: translateY(-5px);
+}
+
+.section-title {
+    font-size: 24px;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #2874f0;
+    font-weight: 700;
+    color: #1a1a2e;
+    display: inline-block;
+    letter-spacing: -0.5px;
+}
+
+/* ========== SAVED ADDRESS CARD ========== */
+.saved-address-card {
+    background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 30px;
+    border: 1px solid #2874f0;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 4px 12px rgba(40,116,240,0.1);
+}
+
+.saved-address-card i {
+    font-size: 38px;
+    color: #2874f0;
+}
+
+.saved-address-details p {
+    margin: 5px 0;
+    color: #333;
+}
+
+.saved-address-details .name {
+    font-weight: 700;
+    font-size: 17px;
+    color: #1a1a2e;
+}
+
+/* ========== PAYMENT OPTIONS - ADVANCED ========== */
+.payment-option {
+    border: 2px solid #e8ecef;
+    border-radius: 20px;
+    margin-bottom: 18px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    overflow: hidden;
+    background: white;
+}
+
+.payment-option:hover {
+    border-color: #2874f0;
+    transform: translateX(8px);
+    box-shadow: 0 8px 20px rgba(40,116,240,0.15);
+}
+
+.payment-option.selected {
+    border-color: #2874f0;
+    background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+    box-shadow: 0 8px 25px rgba(40,116,240,0.2);
+}
+
+.option-header {
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.option-header input[type="radio"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: #2874f0;
+    transition: all 0.2s ease;
+}
+
+.option-header label {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    cursor: pointer;
+    flex: 1;
+    letter-spacing: -0.3px;
+}
+
+.option-icon {
+    font-size: 32px;
+}
+
+.payment-details {
+    padding: 25px;
+    background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
+    border-top: 1px solid #e8ecef;
+    display: none;
+}
+
+.payment-option.selected .payment-details {
+    display: block;
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== CARD TYPE SELECTOR - ADVANCED ========== */
+.card-type-selector {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.card-type-btn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #e8ecef;
+    border-radius: 16px;
+    background: white;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-type-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(40,116,240,0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.card-type-btn:hover::before {
+    left: 100%;
+}
+
+.card-type-btn:hover {
+    border-color: #2874f0;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(40,116,240,0.15);
+}
+
+.card-type-btn.active {
+    border-color: #2874f0;
+    background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+    color: #2874f0;
+    box-shadow: 0 4px 12px rgba(40,116,240,0.2);
+}
+
+.card-type-icon {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+.card-detail-form {
+    display: none;
+}
+
+.card-detail-form.active {
+    display: block;
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== FORM ELEMENTS - ADVANCED ========== */
+.field-group {
+    margin-bottom: 20px;
+}
+
+.field-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #555;
+    letter-spacing: 0.3px;
+}
+
+.field-group input,
+.field-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e8ecef;
+    border-radius: 14px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.field-group input:focus,
+.field-group select:focus {
+    outline: none;
+    border-color: #2874f0;
+    box-shadow: 0 0 0 4px rgba(40,116,240,0.1);
+    transform: translateY(-1px);
+}
+
+.field-group input:hover,
+.field-group select:hover {
+    border-color: #2874f0;
+}
+
+.input-error {
+    border-color: #ff4757 !important;
+    background-color: #fff5f5 !important;
+}
+
+.input-error:focus {
+    box-shadow: 0 0 0 4px rgba(255,71,87,0.1) !important;
+}
+
+.error-message-small {
+    color: #ff4757;
+    font-size: 11px;
+    margin-top: 6px;
+    display: none;
+    font-weight: 500;
+}
+
+.error-message-small.show {
+    display: block;
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.form-row {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.form-row .field-group {
+    flex: 1;
+}
+
+/* ========== UPI APPS GRID - ADVANCED ========== */
+.upi-apps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.upi-app {
+    border: 2px solid #e8ecef;
+    border-radius: 16px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.upi-app::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(40,116,240,0.08), transparent);
+    transition: left 0.4s ease;
+}
+
+.upi-app:hover::before {
+    left: 100%;
+}
+
+.upi-app:hover {
+    border-color: #2874f0;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(40,116,240,0.15);
+}
+
+.upi-app.selected {
+    border-color: #2874f0;
+    background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+    transform: scale(1.02);
+}
+
+.app-icon {
+    font-size: 36px;
+    margin-bottom: 6px;
+}
+
+.app-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+}
+
+/* ========== NET BANKING BANKS ========== */
+.banks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.bank-item {
+    padding: 14px;
+    border: 2px solid #e8ecef;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    text-align: center;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+}
+
+.bank-item:hover {
+    border-color: #2874f0;
+    background: #e8f0fe;
+    transform: translateY(-2px);
+}
+
+.bank-item.selected {
+    border-color: #2874f0;
+    background: linear-gradient(135deg, #2874f0 0%, #1a5cd8 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(40,116,240,0.3);
+}
+
+.bank-icon {
+    font-size: 22px;
+}
+
+/* ========== WALLET OPTIONS ========== */
+.wallet-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.wallet-item {
+    border: 2px solid #e8ecef;
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+}
+
+.wallet-item:hover {
+    border-color: #2874f0;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(40,116,240,0.15);
+}
+
+.wallet-item.selected {
+    border-color: #2874f0;
+    background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+    transform: scale(1.02);
+}
+
+.wallet-icon {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.wallet-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #555;
+}
+
+/* ========== QR CODE ========== */
+.qr-container {
+    text-align: center;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
+    margin: 20px 0;
+    border: 2px dashed #2874f0;
+    transition: all 0.3s ease;
+}
+
+.qr-container:hover {
+    border-color: #fb641b;
+    box-shadow: 0 8px 25px rgba(40,116,240,0.15);
+}
+
+.qr-image {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    transition: transform 0.3s ease;
+}
+
+.qr-image:hover {
+    transform: scale(1.05);
+}
+
+.qr-code-placeholder {
+    font-size: 80px;
+    color: white;
+}
+
+.qr-text {
+    color: #2874f0;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 12px;
+}
+
+/* ========== COD NOTE ========== */
+.cod-note {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 18px;
+    border-radius: 16px;
+    margin: 15px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+}
+
+/* ========== ORDER SUMMARY ========== */
+.order-items {
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 25px;
+    padding-right: 8px;
+}
+
+.order-items::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-items::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+.order-items::-webkit-scrollbar-thumb {
+    background: #2874f0;
+    border-radius: 10px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.order-item:hover {
+    background: #f8f9fa;
+    padding-left: 5px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 14px 0;
+    color: #555;
+    font-size: 15px;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding-top: 20px;
+    border-top: 2px solid #e0e0e0;
+    font-size: 26px;
+    font-weight: 800;
+    color: #fb641b;
+}
+
+/* ========== PAY NOW BUTTON - ADVANCED ========== */
+.pay-now-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #fb641b 0%, #f85a0e 100%);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pay-now-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.pay-now-btn:hover::before {
+    left: 100%;
+}
+
+.pay-now-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(251,100,27,0.4);
+}
+
+.pay-now-btn:active {
+    transform: translateY(0);
+}
+
+.pay-now-btn:disabled {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    cursor: default;
+    transform: none;
+}
+
+.loader {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #ffffff;
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========== BADGES ========== */
+.secure-badge {
+    text-align: center;
+    color: #28a745;
+    font-size: 13px;
+    margin-top: 18px;
+    padding: 14px;
+    background: #e8f5e9;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+.success-message {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    padding: 16px;
+    border-radius: 16px;
+    text-align: center;
+    margin-top: 18px;
+    display: none;
+    font-weight: 600;
+    animation: fadeInUp 0.3s ease;
+}
+
+.error-message-global {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    padding: 16px;
+    border-radius: 16px;
+    text-align: center;
+    margin-top: 18px;
+    display: none;
+    font-weight: 600;
+    animation: shake 0.3s ease;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .payment-wrapper {
+        flex-direction: column;
+    }
+    
+    .upi-apps,
+    .banks-grid,
+    .wallet-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .card-type-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .payment-methods,
+    .order-summary {
+        padding: 20px;
+    }
+    
+    .page-title {
+        font-size: 28px;
+    }
+    
+    .option-header {
+        padding: 15px 18px;
+    }
+    
+    .option-header label {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .upi-apps,
+    .banks-grid,
+    .wallet-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-type-selector {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+}

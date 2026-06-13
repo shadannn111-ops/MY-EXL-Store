@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXL Store - Subscription</title>
+   <link rel="stylesheet" href="subscription.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">EXL Store</div>
+                <div class="nav-links" id="navLinks"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Choose Your Subscription Plan</h1>
+        <p class="subtitle">Unlock exclusive benefits and save more with our membership plans</p>
+        
+        <div class="plans-container">
+            <!-- Basic Plan -->
+            <div class="plan-card" id="basicPlan">
+                <div class="plan-icon">🌱</div>
+                <div class="plan-name">Basic</div>
+                <div class="plan-price">₹199 <span>/month</span></div>
+                <div class="plan-description">Perfect for occasional shoppers</div>
+                <ul class="plan-features">
+                    <li>5% off on all products</li>
+                    <li>Free delivery above ₹499</li>
+                    <li>24/7 customer support</li>
+                    <li>30 days return policy</li>
+                    <li>Early access to sales</li>
+                </ul>
+                <button class="subscribe-btn" onclick="subscribe('Basic', 199, this)">Subscribe Now</button>
+            </div>
+
+            <!-- Premium Plan (Popular) -->
+            <div class="plan-card popular" id="premiumPlan">
+                <div class="popular-badge">Most Popular</div>
+                <div class="plan-icon">⭐</div>
+                <div class="plan-name">Premium</div>
+                <div class="plan-price">₹499 <span>/month</span></div>
+                <div class="plan-description">Best value for regular shoppers</div>
+                <ul class="plan-features">
+                    <li>15% off on all products</li>
+                    <li>Free delivery on all orders</li>
+                    <li>Priority customer support</li>
+                    <li>60 days return policy</li>
+                    <li>Early access to sales</li>
+                    <li>Exclusive member deals</li>
+                </ul>
+                <button class="subscribe-btn" onclick="subscribe('Premium', 499, this)">Subscribe Now</button>
+            </div>
+
+            <!-- Yearly Plan -->
+            <div class="plan-card" id="yearlyPlan">
+                <div class="plan-icon">🌟</div>
+                <div class="plan-name">Yearly</div>
+                <div class="plan-price">₹3999 <span>/year</span></div>
+                <div class="plan-description">Save 33% with annual plan</div>
+                <ul class="plan-features">
+                    <li>20% off on all products</li>
+                    <li>Free delivery on all orders</li>
+                    <li>Premium customer support</li>
+                    <li>90 days return policy</li>
+                    <li>Early access to sales</li>
+                    <li>Exclusive member deals</li>
+                    <li>Birthday special gift</li>
+                </ul>
+                <button class="subscribe-btn" onclick="subscribe('Yearly', 3999, this)">Subscribe Now</button>
+            </div>
+        </div>
+
+        <div class="guarantee">
+            <p><span>✓ 30-Day Money Back Guarantee</span> | <span>✓ Cancel Anytime</span> | <span>✓ No Hidden Charges</span></p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                © 2026 EXL Store. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Update header with user info
+        function updateHeader() {
+            let navLinks = document.getElementById('navLinks');
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            let userEmail = localStorage.getItem('userEmail');
+            
+            if(isLoggedIn === 'true' && userEmail) {
+                let shortEmail = userEmail.split('@')[0];
+                navLinks.innerHTML = `
+                    <div class="user-info">
+                        <span>👤 ${shortEmail}</span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                    <a href="login.html">Login</a>
+                    <a href="main.html">Home</a>
+                    <a href="subscription.html">Subscribe</a>
+                    <a href="cart.html">Cart</a>
+                    <a href="payment.html">Payment</a>
+                    <a href="final.html">Final</a>
+                `;
+            } else {
+                navLinks.innerHTML = `
+                    <a href="login.html">Login</a>
+                    <a href="main.html">Home</a>
+                    <a href="subscription.html">Subscribe</a>
+                    <a href="cart.html">Cart</a>
+                    <a href="payment.html">Payment</a>
+                    <a href="final.html">Final</a>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('cart');
+            window.location.href = 'login.html';
+        }
+
+        // Subscribe function - sirf clicked button pe processing
+        function subscribe(planName, planPrice, button) {
+            // Check if user is logged in
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            
+            if(isLoggedIn !== 'true') {
+                alert('Please login first to subscribe!');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Disable only the clicked button
+            button.disabled = true;
+            button.classList.add('processing');
+            button.innerHTML = '<span>Processing</span><span class="loader"></span>';
+
+            // Create subscription object
+            let subscription = {
+                plan: planName,
+                price: planPrice,
+                date: new Date().toLocaleDateString(),
+                type: 'subscription'
+            };
+
+            // Store in localStorage
+            localStorage.setItem('currentSubscription', JSON.stringify(subscription));
+
+            // Add to cart as a product
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            let subscriptionProduct = {
+                id: 100 + (planName === 'Basic' ? 1 : planName === 'Premium' ? 2 : 3),
+                name: planName + ' Subscription',
+                price: planPrice,
+                original: planPrice,
+                category: 'subscription',
+                brand: 'EXL Store'
+            };
+            
+            cart.push(subscriptionProduct);
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Redirect to payment page after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'payment.html';
+            }, 2000);
+        }
+
+        // Check login on page load
+        function checkLogin() {
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            if(isLoggedIn !== 'true') {
+                console.log('Please login to subscribe');
+            }
+        }
+
+        // Initialize
+        checkLogin();
+        updateHeader();
+    </script>
+</body>
+</html>

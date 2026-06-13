@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXL Store - Secure Checkout</title>
+    <link rel="stylesheet" href="payment.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Additional styles for address edit modal */
+        .address-edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .address-edit-modal.active {
+            display: flex;
+        }
+        .address-edit-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .address-edit-content h3 {
+            margin-bottom: 20px;
+            color: #2874f0;
+        }
+        .address-edit-content .form-group {
+            margin-bottom: 15px;
+        }
+        .address-edit-content .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+        .address-edit-content .form-group input,
+        .address-edit-content .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .address-edit-content .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .address-edit-content .form-row .form-group {
+            flex: 1;
+        }
+        .address-edit-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .address-edit-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .save-address-btn {
+            background: #2874f0;
+            color: white;
+            border: none;
+        }
+        .cancel-address-btn {
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+        }
+        .change-address-btn {
+            background: none;
+            border: 1px solid #2874f0;
+            color: #2874f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: 0.2s;
+        }
+        .change-address-btn:hover {
+            background: #2874f0;
+            color: white;
+        }
+        .address-header {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">EXL <span>Store</span></div>
+                <div class="nav-links" id="navLinks">
+                    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="main.html"><i class="fas fa-home"></i> Home</a>
+                    <a href="subscription.html"><i class="fas fa-crown"></i> Subscribe</a>
+                    <a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart</a>
+                    <a href="payment.html"><i class="fas fa-credit-card"></i> Payment</a>
+                    <a href="final.html"><i class="fas fa-receipt"></i> Final</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-lock"></i> Secure Checkout</h1>
+        
+        <div class="payment-wrapper">
+            <!-- LEFT COLUMN - PAYMENT METHODS -->
+            <div class="payment-methods">
+                <!-- SAVED ADDRESS DISPLAY with CHANGE BUTTON -->
+                <div class="saved-address-card" id="savedAddressCard">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="saved-address-details" id="savedAddressDetails">
+                        <p class="name"><i class="fas fa-spinner fa-spin"></i> Loading address...</p>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-credit-card"></i> Choose Payment Method</div>
+
+                <!-- OPTION 1: CREDIT/DEBIT CARD -->
+                <div class="payment-option selected" id="cardOption" onclick="selectPayment('card')">
+                    <div class="option-header">
+                        <input type="radio" name="payment" id="cardRadio" checked onclick="event.stopPropagation()">
+                        <label><i class="fas fa-credit-card"></i> Credit / Debit Card</label>
+                        <span class="option-icon">💳</span>
+                    </div>
+                    <div class="payment-details" id="cardDetails">
+                        <div class="card-type-selector">
+                            <div class="card-type-btn active" data-card-type="visa" onclick="selectCardType('visa', event)">
+                                <div class="card-type-icon"><i class="fab fa-cc-visa" style="font-size: 32px; color: #1a1f71;"></i></div>
+                                <div>VISA</div>
+                            </div>
+                            <div class="card-type-btn" data-card-type="mastercard" onclick="selectCardType('mastercard', event)">
+                                <div class="card-type-icon"><i class="fab fa-cc-mastercard" style="font-size: 32px; color: #eb001b;"></i></div>
+                                <div>MasterCard</div>
+                            </div>
+                            <div class="card-type-btn" data-card-type="rupay" onclick="selectCardType('rupay', event)">
+                                <div class="card-type-icon"><i class="fas fa-credit-card" style="font-size: 32px; color: #ff6b00;"></i></div>
+                                <div>RuPay</div>
+                            </div>
+                        </div>
+
+                        <!-- VISA Form -->
+                        <div id="visaForm" class="card-detail-form active">
+                            <div class="field-group">
+                                <label><i class="fab fa-cc-visa"></i> VISA Card Number</label>
+                                <input type="text" id="visaCardNumber" placeholder="4111 1111 1111 1111" maxlength="19">
+                                <div class="error-message-small" id="visaCardError">Please enter valid 16-digit card number</div>
+                            </div>
+                            <div class="field-group">
+                                <label>Card Holder Name</label>
+                                <input type="text" id="visaCardName" placeholder="Name on card">
+                                <div class="error-message-small" id="visaNameError">Please enter card holder name</div>
+                            </div>
+                            <div class="form-row">
+                                <div class="field-group">
+                                    <label>Expiry Date</label>
+                                    <input type="text" id="visaExpiry" placeholder="MM/YY" maxlength="5">
+                                    <div class="error-message-small" id="visaExpiryError">Enter valid expiry (MM/YY)</div>
+                                </div>
+                                <div class="field-group">
+                                    <label>CVV</label>
+                                    <input type="password" id="visaCvv" placeholder="123" maxlength="3">
+                                    <div class="error-message-small" id="visaCvvError">Enter 3-digit CVV</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MasterCard Form -->
+                        <div id="mastercardForm" class="card-detail-form">
+                            <div class="field-group">
+                                <label><i class="fab fa-cc-mastercard"></i> MasterCard Number</label>
+                                <input type="text" id="mastercardNumber" placeholder="5555 5555 5555 4444" maxlength="19">
+                                <div class="error-message-small" id="mastercardCardError">Please enter valid 16-digit card number</div>
+                            </div>
+                            <div class="field-group">
+                                <label>Card Holder Name</label>
+                                <input type="text" id="mastercardName" placeholder="Name on card">
+                                <div class="error-message-small" id="mastercardNameError">Please enter card holder name</div>
+                            </div>
+                            <div class="form-row">
+                                <div class="field-group">
+                                    <label>Expiry Date</label>
+                                    <input type="text" id="mastercardExpiry" placeholder="MM/YY" maxlength="5">
+                                    <div class="error-message-small" id="mastercardExpiryError">Enter valid expiry (MM/YY)</div>
+                                </div>
+                                <div class="field-group">
+                                    <label>CVV</label>
+                                    <input type="password" id="mastercardCvv" placeholder="123" maxlength="3">
+                                    <div class="error-message-small" id="mastercardCvvError">Enter 3-digit CVV</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RuPay Form -->
+                        <div id="rupayForm" class="card-detail-form">
+                            <div class="field-group">
+                                <label><i class="fas fa-credit-card"></i> RuPay Card Number</label>
+                                <input type="text" id="rupayNumber" placeholder="6521 0000 0000 0000" maxlength="19">
+                                <div class="error-message-small" id="rupayCardError">Please enter valid 16-digit card number</div>
+                            </div>
+                            <div class="field-group">
+                                <label>Card Holder Name</label>
+                                <input type="text" id="rupayName" placeholder="Name on card">
+                                <div class="error-message-small" id="rupayNameError">Please enter card holder name</div>
+                            </div>
+                            <div class="form-row">
+                                <div class="field-group">
+                                    <label>Expiry Date</label>
+                                    <input type="text" id="rupayExpiry" placeholder="MM/YY" maxlength="5">
+                                    <div class="error-message-small" id="rupayExpiryError">Enter valid expiry (MM/YY)</div>
+                                </div>
+                                <div class="field-group">
+                                    <label>CVV</label>
+                                    <input type="password" id="rupayCvv" placeholder="123" maxlength="3">
+                                    <div class="error-message-small" id="rupayCvvError">Enter 3-digit CVV</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPTION 2: UPI -->
+                <div class="payment-option" id="upiOption" onclick="selectPayment('upi')">
+                    <div class="option-header">
+                        <input type="radio" name="payment" id="upiRadio" onclick="event.stopPropagation()">
+                        <label><i class="fas fa-mobile-alt"></i> UPI / BHIM</label>
+                        <span class="option-icon">📱</span>
+                    </div>
+                    <div class="payment-details" id="upiDetails">
+                        <div class="upi-apps">
+                            <div class="upi-app selected" data-app="phonepe" onclick="selectUpiApp('phonepe', event)">
+                                <div class="app-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <div class="app-name">PhonePe</div>
+                            </div>
+                            <div class="upi-app" data-app="gpay" onclick="selectUpiApp('gpay', event)">
+                                <div class="app-icon"><i class="fab fa-google"></i></div>
+                                <div class="app-name">Google Pay</div>
+                            </div>
+                            <div class="upi-app" data-app="paytm" onclick="selectUpiApp('paytm', event)">
+                                <div class="app-icon"><i class="fas fa-rupee-sign"></i></div>
+                                <div class="app-name">Paytm</div>
+                            </div>
+                            <div class="upi-app" data-app="bhim" onclick="selectUpiApp('bhim', event)">
+                                <div class="app-icon"><i class="fas fa-university"></i></div>
+                                <div class="app-name">BHIM</div>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label><i class="fas fa-envelope"></i> UPI ID</label>
+                            <input type="text" id="upiId" placeholder="username@upi">
+                            <div class="error-message-small" id="upiIdError">Please enter valid UPI ID (e.g., name@upi)</div>
+                        </div>
+                        <div class="qr-container">
+                            <div class="qr-image">
+                                <div class="qr-code-placeholder"><i class="fas fa-qrcode"></i></div>
+                            </div>
+                            <div class="qr-text"><i class="fas fa-qrcode"></i> Scan QR code with any UPI app</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPTION 3: NET BANKING -->
+                <div class="payment-option" id="netbankingOption" onclick="selectPayment('netbanking')">
+                    <div class="option-header">
+                        <input type="radio" name="payment" id="netbankingRadio" onclick="event.stopPropagation()">
+                        <label><i class="fas fa-university"></i> Net Banking</label>
+                        <span class="option-icon">🏦</span>
+                    </div>
+                    <div class="payment-details" id="netbankingDetails">
+                        <div class="banks-grid">
+                            <div class="bank-item selected" data-bank="sbi" onclick="selectBank('sbi', event)">SBI</div>
+                            <div class="bank-item" data-bank="hdfc" onclick="selectBank('hdfc', event)">HDFC Bank</div>
+                            <div class="bank-item" data-bank="icici" onclick="selectBank('icici', event)">ICICI Bank</div>
+                            <div class="bank-item" data-bank="axis" onclick="selectBank('axis', event)">Axis Bank</div>
+                            <div class="bank-item" data-bank="kotak" onclick="selectBank('kotak', event)">Kotak Mahindra</div>
+                            <div class="bank-item" data-bank="pnb" onclick="selectBank('pnb', event)">PNB</div>
+                        </div>
+                        <div class="error-message-small" id="netbankingError" style="text-align:center;">Please select a bank</div>
+                    </div>
+                </div>
+
+                <!-- OPTION 4: MOBILE WALLETS -->
+                <div class="payment-option" id="walletOption" onclick="selectPayment('wallet')">
+                    <div class="option-header">
+                        <input type="radio" name="payment" id="walletRadio" onclick="event.stopPropagation()">
+                        <label><i class="fas fa-wallet"></i> Mobile Wallets</label>
+                        <span class="option-icon">👛</span>
+                    </div>
+                    <div class="payment-details" id="walletDetails">
+                        <div class="wallet-options">
+                            <div class="wallet-item selected" data-wallet="paytm" onclick="selectWallet('paytm', event)">Paytm</div>
+                            <div class="wallet-item" data-wallet="phonepe" onclick="selectWallet('phonepe', event)">PhonePe</div>
+                            <div class="wallet-item" data-wallet="amazon" onclick="selectWallet('amazon', event)">Amazon Pay</div>
+                            <div class="wallet-item" data-wallet="freecharge" onclick="selectWallet('freecharge', event)">Freecharge</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPTION 5: CASH ON DELIVERY -->
+                <div class="payment-option" id="codOption" onclick="selectPayment('cod')">
+                    <div class="option-header">
+                        <input type="radio" name="payment" id="codRadio" onclick="event.stopPropagation()">
+                        <label><i class="fas fa-money-bill-wave"></i> Cash on Delivery</label>
+                        <span class="option-icon">💵</span>
+                    </div>
+                    <div class="payment-details" id="codDetails">
+                        <div class="cod-note">
+                            <i class="fas fa-truck"></i>
+                            <strong>Pay when you receive the product</strong>
+                            <div>Cash, Card, or UPI accepted at delivery</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN - ORDER SUMMARY -->
+            <div class="order-summary">
+                <h3><i class="fas fa-shopping-bag"></i> Order Summary</h3>
+                <div class="order-items" id="orderItems"></div>
+                <div class="summary-item">
+                    <span><i class="fas fa-tag"></i> Subtotal</span>
+                    <span id="subtotal">₹0</span>
+                </div>
+                <div class="summary-item">
+                    <span><i class="fas fa-truck"></i> Shipping</span>
+                    <span id="shipping">₹0</span>
+                </div>
+                <div class="summary-item">
+                    <span><i class="fas fa-percent"></i> Tax (GST)</span>
+                    <span id="tax">₹0</span>
+                </div>
+                <div class="summary-total">
+                    <span><i class="fas fa-rupee-sign"></i> Total Amount</span>
+                    <span id="total">₹0</span>
+                </div>
+                <button class="pay-now-btn" id="payNowBtn" onclick="processPayment()">
+                    <i class="fas fa-shield-alt"></i> Pay Now
+                </button>
+                <div class="secure-badge">
+                    <i class="fas fa-lock"></i> 100% Secure Payments 
+                </div>
+                <div id="successMessage" class="success-message"></div>
+                <div id="errorMessage" class="error-message-global"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Edit Modal -->
+    <div id="addressEditModal" class="address-edit-modal">
+        <div class="address-edit-content">
+            <h3><i class="fas fa-edit"></i> Edit Delivery Address</h3>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="editFullName" placeholder="Full name">
+            </div>
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="editMobile" placeholder="10-digit mobile" maxlength="10">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <textarea id="editAddress" rows="2" placeholder="House number, street, landmark"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="editCity" placeholder="City">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" id="editState" placeholder="State">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <input type="text" id="editPincode" placeholder="6-digit pincode" maxlength="6">
+                </div>
+            </div>
+            <div class="address-edit-buttons">
+                <button class="save-address-btn" onclick="saveAddressChanges()">Save Changes</button>
+                <button class="cancel-address-btn" onclick="closeAddressModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let selectedPayment = 'card';
+        let selectedCardType = 'visa';
+        let selectedUpiApp = 'phonepe';
+        let selectedBank = 'sbi';
+        let selectedWallet = 'paytm';
+
+        function updateHeader() {
+            let navLinks = document.getElementById('navLinks');
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            let userEmail = localStorage.getItem('userEmail');
+            
+            if(isLoggedIn === 'true' && userEmail) {
+                let shortEmail = userEmail.split('@')[0];
+                navLinks.innerHTML = `
+                    <div class="user-info">
+                        <span><i class="fas fa-user-circle"></i> ${shortEmail}</span>
+                        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </div>
+                    <a href="main.html"><i class="fas fa-home"></i> Home</a>
+                    <a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart</a>
+                    <a href="payment.html"><i class="fas fa-credit-card"></i> Payment</a>
+                    <a href="final.html"><i class="fas fa-receipt"></i> Final</a>
+                `;
+            } else {
+                navLinks.innerHTML = `
+                    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="main.html"><i class="fas fa-home"></i> Home</a>
+                    <a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart</a>
+                    <a href="payment.html"><i class="fas fa-credit-card"></i> Payment</a>
+                    <a href="final.html"><i class="fas fa-receipt"></i> Final</a>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function formatIndianPrice(price) {
+            return price.toLocaleString('en-IN');
+        }
+
+        // Address Modal Functions
+        function openAddressModal() {
+            // Load current address into modal
+            document.getElementById('editFullName').value = localStorage.getItem('userName') || '';
+            document.getElementById('editMobile').value = localStorage.getItem('userMobile') || '';
+            let savedAddress = JSON.parse(localStorage.getItem('userAddress')) || {};
+            document.getElementById('editAddress').value = savedAddress.address || '';
+            document.getElementById('editCity').value = localStorage.getItem('userCity') || '';
+            document.getElementById('editState').value = localStorage.getItem('userState') || '';
+            document.getElementById('editPincode').value = localStorage.getItem('userPincode') || '';
+            document.getElementById('addressEditModal').classList.add('active');
+        }
+
+        function closeAddressModal() {
+            document.getElementById('addressEditModal').classList.remove('active');
+        }
+
+        function saveAddressChanges() {
+            const fullName = document.getElementById('editFullName').value.trim();
+            const mobile = document.getElementById('editMobile').value.trim();
+            const address = document.getElementById('editAddress').value.trim();
+            const city = document.getElementById('editCity').value.trim();
+            const state = document.getElementById('editState').value.trim();
+            const pincode = document.getElementById('editPincode').value.trim();
+            
+            if (!fullName) {
+                alert('Please enter full name');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('userName', fullName);
+            localStorage.setItem('userMobile', mobile);
+            localStorage.setItem('userCity', city || 'Mumbai');
+            localStorage.setItem('userState', state || 'Maharashtra');
+            localStorage.setItem('userPincode', pincode || '400001');
+            localStorage.setItem('userAddress', JSON.stringify({
+                fullName: fullName,
+                mobile: mobile,
+                address: address,
+                city: city || 'Mumbai',
+                state: state || 'Maharashtra',
+                pincode: pincode || '400001'
+            }));
+            
+            // Update display
+            displaySavedAddress();
+            closeAddressModal();
+            
+            // Show success message
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#28a745; color:white; padding:12px 20px; border-radius:8px; z-index:9999;';
+            toast.innerHTML = '<i class="fas fa-check-circle"></i> Address updated successfully!';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function displaySavedAddress() {
+            let userName = localStorage.getItem('userName') || 'Guest User';
+            let userMobile = localStorage.getItem('userMobile') || 'Not provided';
+            let userCity = localStorage.getItem('userCity') || 'Mumbai';
+            let userState = localStorage.getItem('userState') || 'Maharashtra';
+            let userPincode = localStorage.getItem('userPincode') || '400001';
+            let savedAddress = JSON.parse(localStorage.getItem('userAddress')) || null;
+            
+            let addressHtml = `
+                <div class="address-header">
+                    <p class="name"><i class="fas fa-user-circle"></i> ${userName}</p>
+                    <button class="change-address-btn" onclick="openAddressModal()"><i class="fas fa-edit"></i> Change Address</button>
+                </div>
+                <p><i class="fas fa-phone-alt"></i> ${userMobile}</p>
+            `;
+            
+            if (savedAddress && savedAddress.address) {
+                addressHtml += `
+                    <p><i class="fas fa-map-marker-alt"></i> ${savedAddress.address}</p>
+                    <p>${savedAddress.city || userCity}, ${savedAddress.state || userState} - ${savedAddress.pincode || userPincode}</p>
+                `;
+            } else {
+                addressHtml += `<p><i class="fas fa-map-marker-alt"></i> ${userCity}, ${userState} - ${userPincode}</p>`;
+            }
+            
+            document.getElementById('savedAddressDetails').innerHTML = addressHtml;
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById(method + 'Option').classList.add('selected');
+            document.getElementById(method + 'Radio').checked = true;
+        }
+
+        function selectCardType(cardType, event) {
+            if(event) event.stopPropagation();
+            selectedCardType = cardType;
+            document.querySelectorAll('.card-type-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.card-type-btn').classList.add('active');
+            document.querySelectorAll('.card-detail-form').forEach(form => form.classList.remove('active'));
+            document.getElementById(cardType + 'Form').classList.add('active');
+            clearCardErrors();
+        }
+
+        function selectUpiApp(app, event) {
+            if(event) event.stopPropagation();
+            selectedUpiApp = app;
+            document.querySelectorAll('.upi-app').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.upi-app').classList.add('selected');
+        }
+
+        function selectBank(bank, event) {
+            if(event) event.stopPropagation();
+            selectedBank = bank;
+            document.querySelectorAll('.bank-item').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('netbankingError')?.classList.remove('show');
+        }
+
+        function selectWallet(wallet, event) {
+            if(event) event.stopPropagation();
+            selectedWallet = wallet;
+            document.querySelectorAll('.wallet-item').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function clearCardErrors() {
+            const errorIds = ['visaCardError', 'visaNameError', 'visaExpiryError', 'visaCvvError',
+                              'mastercardCardError', 'mastercardNameError', 'mastercardExpiryError', 'mastercardCvvError',
+                              'rupayCardError', 'rupayNameError', 'rupayExpiryError', 'rupayCvvError'];
+            errorIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.remove('show');
+            });
+            document.querySelectorAll('.field-group input').forEach(input => {
+                input.classList.remove('input-error');
+            });
+        }
+
+        function validateCardDetails() {
+            let isValid = true;
+            clearCardErrors();
+
+            if(selectedCardType === 'visa') {
+                const cardNum = document.getElementById('visaCardNumber').value.replace(/\s/g, '');
+                const cardName = document.getElementById('visaCardName').value.trim();
+                const expiry = document.getElementById('visaExpiry').value.trim();
+                const cvv = document.getElementById('visaCvv').value.trim();
+
+                if(!cardNum || cardNum.length < 16 || !/^4\d{15}$/.test(cardNum)) {
+                    document.getElementById('visaCardError').classList.add('show');
+                    document.getElementById('visaCardNumber').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!cardName || cardName.length < 3) {
+                    document.getElementById('visaNameError').classList.add('show');
+                    document.getElementById('visaCardName').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!expiry || !/^(0[1-9]|1[0-2])\/(2[5-9]|[3-9][0-9])$/.test(expiry)) {
+                    document.getElementById('visaExpiryError').classList.add('show');
+                    document.getElementById('visaExpiry').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!cvv || !/^\d{3}$/.test(cvv)) {
+                    document.getElementById('visaCvvError').classList.add('show');
+                    document.getElementById('visaCvv').classList.add('input-error');
+                    isValid = false;
+                }
+            } 
+            else if(selectedCardType === 'mastercard') {
+                const cardNum = document.getElementById('mastercardNumber').value.replace(/\s/g, '');
+                const cardName = document.getElementById('mastercardName').value.trim();
+                const expiry = document.getElementById('mastercardExpiry').value.trim();
+                const cvv = document.getElementById('mastercardCvv').value.trim();
+
+                if(!cardNum || cardNum.length < 16 || !/^5[1-5]\d{14}$/.test(cardNum)) {
+                    document.getElementById('mastercardCardError').classList.add('show');
+                    document.getElementById('mastercardNumber').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!cardName || cardName.length < 3) {
+                    document.getElementById('mastercardNameError').classList.add('show');
+                    document.getElementById('mastercardName').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!expiry || !/^(0[1-9]|1[0-2])\/(2[5-9]|[3-9][0-9])$/.test(expiry)) {
+                    document.getElementById('mastercardExpiryError').classList.add('show');
+                    document.getElementById('mastercardExpiry').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!cvv || !/^\d{3}$/.test(cvv)) {
+                    document.getElementById('mastercardCvvError').classList.add('show');
+                    document.getElementById('mastercardCvv').classList.add('input-error');
+                    isValid = false;
+                }
+            }
+            else if(selectedCardType === 'rupay') {
+                const cardNum = document.getElementById('rupayNumber').value.replace(/\s/g, '');
+                const cardName = document.getElementById('rupayName').value.trim();
+                const expiry = document.getElementById('rupayExpiry').value.trim();
+                const cvv = document.getElementById('rupayCvv').value.trim();
+
+                if(!cardNum || cardNum.length < 16 || !/^(65|81)\d{14}$/.test(cardNum)) {
+                    document.getElementById('rupayCardError').classList.add('show');
+                    document.getElementById('rupayNumber').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!cardName || cardName.length < 3) {
+                    document.getElementById('rupayNameError').classList.add('show');
+                    document.getElementById('rupayName').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!expiry || !/^(0[1-9]|1[0-2])\/(2[5-9]|[3-9][0-9])$/.test(expiry)) {
+                    document.getElementById('rupayExpiryError').classList.add('show');
+                    document.getElementById('rupayExpiry').classList.add('input-error');
+                    isValid = false;
+                }
+                if(!cvv || !/^\d{3}$/.test(cvv)) {
+                    document.getElementById('rupayCvvError').classList.add('show');
+                    document.getElementById('rupayCvv').classList.add('input-error');
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
+
+        function validateUpiDetails() {
+            let upiId = document.getElementById('upiId').value.trim();
+            if(!upiId || !upiId.includes('@')) {
+                document.getElementById('upiIdError').classList.add('show');
+                document.getElementById('upiId').classList.add('input-error');
+                return false;
+            }
+            document.getElementById('upiIdError').classList.remove('show');
+            document.getElementById('upiId').classList.remove('input-error');
+            return true;
+        }
+
+        function validateNetbankingDetails() {
+            if(!selectedBank) {
+                document.getElementById('netbankingError').classList.add('show');
+                return false;
+            }
+            document.getElementById('netbankingError').classList.remove('show');
+            return true;
+        }
+
+        function formatCardNumber(input, maxLength) {
+            let value = input.value.replace(/\s/g, '').replace(/\D/g, '');
+            let formatted = '';
+            for(let i = 0; i < value.length && i < maxLength; i++) {
+                if(i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += value[i];
+            }
+            input.value = formatted;
+        }
+
+        function formatExpiry(input) {
+            let value = input.value.replace(/\D/g, '');
+            if(value.length >= 2) {
+                input.value = value.slice(0,2) + '/' + value.slice(2,4);
+            }
+        }
+
+        document.getElementById('visaCardNumber')?.addEventListener('input', function(e) { formatCardNumber(e.target, 16); });
+        document.getElementById('mastercardNumber')?.addEventListener('input', function(e) { formatCardNumber(e.target, 16); });
+        document.getElementById('rupayNumber')?.addEventListener('input', function(e) { formatCardNumber(e.target, 16); });
+        document.getElementById('visaExpiry')?.addEventListener('input', function(e) { formatExpiry(e.target); });
+        document.getElementById('mastercardExpiry')?.addEventListener('input', function(e) { formatExpiry(e.target); });
+        document.getElementById('rupayExpiry')?.addEventListener('input', function(e) { formatExpiry(e.target); });
+
+        function updateOrderSummary() {
+            let itemsHtml = '';
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const quantity = item.quantity || 1;
+                subtotal += item.price * quantity;
+                itemsHtml += `
+                    <div class="order-item">
+                        <span><i class="fas fa-box"></i> ${item.name} ${quantity > 1 ? `(x${quantity})` : ''}</span>
+                        <span>₹${formatIndianPrice(item.price * quantity)}</span>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('orderItems').innerHTML = itemsHtml || '<p style="color:#999; text-align:center;"><i class="fas fa-shopping-cart"></i> No items</p>';
+            let total = subtotal;
+            document.getElementById('subtotal').innerHTML = `₹${formatIndianPrice(subtotal)}`;
+            document.getElementById('total').innerHTML = `₹${formatIndianPrice(total)}`;
+        }
+
+        function getDeliveryAddress() {
+            let userName = localStorage.getItem('userName') || 'Guest';
+            let userMobile = localStorage.getItem('userMobile') || 'Not provided';
+            let userCity = localStorage.getItem('userCity') || 'Mumbai';
+            let userState = localStorage.getItem('userState') || 'Maharashtra';
+            let userPincode = localStorage.getItem('userPincode') || '400001';
+            let savedAddress = JSON.parse(localStorage.getItem('userAddress')) || null;
+            
+            if (savedAddress && savedAddress.address) {
+                return `${savedAddress.fullName || userName}, ${savedAddress.address}, ${savedAddress.city || userCity} - ${savedAddress.pincode || userPincode}, Mobile: ${savedAddress.mobile || userMobile}`;
+            }
+            return `${userName}, ${userCity}, ${userState} - ${userPincode}, Mobile: ${userMobile}`;
+        }
+
+        async function processPayment() {
+            if(cart.length === 0) {
+                alert('Your cart is empty!');
+                window.location.href = 'main.html';
+                return;
+            }
+
+            let isValid = false;
+            if(selectedPayment === 'card') {
+                isValid = validateCardDetails();
+                if(!isValid) {
+                    document.getElementById('errorMessage').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please fill all card details correctly!';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 3000);
+                    return;
+                }
+            } 
+            else if(selectedPayment === 'upi') {
+                isValid = validateUpiDetails();
+                if(!isValid) {
+                    document.getElementById('errorMessage').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter valid UPI ID (e.g., name@upi)!';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 3000);
+                    return;
+                }
+            }
+            else if(selectedPayment === 'netbanking') {
+                isValid = validateNetbankingDetails();
+                if(!isValid) {
+                    document.getElementById('errorMessage').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please select a bank!';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 3000);
+                    return;
+                }
+            }
+
+            const payBtn = document.getElementById('payNowBtn');
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            successDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<span class="loader"></span> Processing Payment...';
+            
+            let subtotal = 0;
+            cart.forEach(item => {
+                const quantity = item.quantity || 1;
+                subtotal += item.price * quantity;
+            });
+            let total = subtotal;
+            
+            let paymentMethodDisplay = '';
+            if(selectedPayment === 'card') {
+                const cardTypeNames = { visa: 'VISA', mastercard: 'MasterCard', rupay: 'RuPay' };
+                paymentMethodDisplay = `${cardTypeNames[selectedCardType]} Card`;
+            } else if(selectedPayment === 'upi') {
+                const upiNames = { phonepe: 'PhonePe', gpay: 'Google Pay', paytm: 'Paytm', bhim: 'BHIM' };
+                paymentMethodDisplay = `UPI (${upiNames[selectedUpiApp]})`;
+            } else if(selectedPayment === 'netbanking') {
+                const bankNames = { sbi: 'SBI', hdfc: 'HDFC', icici: 'ICICI', axis: 'Axis', kotak: 'Kotak', pnb: 'PNB' };
+                paymentMethodDisplay = `Net Banking (${bankNames[selectedBank]})`;
+            } else if(selectedPayment === 'wallet') {
+                const walletNames = { paytm: 'Paytm', phonepe: 'PhonePe', amazon: 'Amazon Pay', freecharge: 'Freecharge' };
+                paymentMethodDisplay = `${walletNames[selectedWallet]} Wallet`;
+            } else {
+                paymentMethodDisplay = 'Cash on Delivery';
+            }
+            
+            const orderNumber = 'ORD' + Date.now().toString().slice(-8);
+            const transactionId = 'TXN' + Date.now().toString().slice(-8) + Math.floor(Math.random() * 1000);
+            
+            let addressDetails = {
+                fullName: localStorage.getItem('userName') || 'Guest',
+                mobile: localStorage.getItem('userMobile') || 'Not provided',
+                address: (JSON.parse(localStorage.getItem('userAddress')) || {}).address || '',
+                city: localStorage.getItem('userCity') || 'Mumbai',
+                state: localStorage.getItem('userState') || 'Maharashtra',
+                pincode: localStorage.getItem('userPincode') || '400001'
+            };
+            
+            const orderData = {
+                userId: localStorage.getItem('userId') || 'guest',
+                userEmail: localStorage.getItem('userEmail') || 'guest@exl.com',
+                paymentMethod: paymentMethodDisplay,
+                shippingAddress: getDeliveryAddress(),
+                addressDetails: addressDetails,
+                items: cart.map(item => ({ ...item, quantity: item.quantity || 1 })),
+                total: total,
+                orderNumber: orderNumber,
+                transactionId: transactionId
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/checkout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const paymentDetails = {
+                        method: paymentMethodDisplay,
+                        transactionId: transactionId,
+                        amount: `₹${formatIndianPrice(total)}`,
+                        date: new Date().toLocaleString(),
+                        address: addressDetails,
+                        orderNumber: orderNumber,
+                        items: cart
+                    };
+                    localStorage.setItem('lastPayment', JSON.stringify(paymentDetails));
+                    localStorage.setItem('lastCart', JSON.stringify(cart));
+                    localStorage.removeItem('cart');
+                    
+                    successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Payment Successful! Redirecting to receipt...';
+                    successDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'final.html';
+                    }, 2000);
+                } else {
+                    errorDiv.innerHTML = '<i class="fas fa-times-circle"></i> ' + (data.message || 'Payment failed! Please try again.');
+                    errorDiv.style.display = 'block';
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Pay Now';
+                }
+            } catch (error) {
+                errorDiv.innerHTML = '<i class="fas fa-wifi"></i> Network error! Make sure backend is running on port 3000';
+                errorDiv.style.display = 'block';
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Pay Now';
+            }
+        }
+
+        function checkLogin() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
+        }
+
+        checkLogin();
+        updateHeader();
+        displaySavedAddress();
+        
+        if(cart.length === 0) {
+            alert('Your cart is empty! Redirecting to home page.');
+            window.location.href = 'main.html';
+        }
+        
+        updateOrderSummary();
+    </script>
+</body>
+</html>

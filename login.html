@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXL Store - Login</title>
+    <link rel="stylesheet" href="login.css">
+    <style>
+        .info-text {
+            margin-top: 20px;
+            padding: 12px;
+            background: #e8f0fe;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            color: #2874f0;
+        }
+        .info-text a {
+            color: #fb641b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .info-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">EXL Store</div>
+                <div class="nav-links" id="navLinks">
+                    <a href="login.html">Login</a>
+                    <a href="main.html">Home</a>
+                    <a href="subscription.html">Subscribe</a>
+                    <a href="cart.html">Cart</a>
+                    <a href="payment.html">Payment</a>
+                    <a href="final.html">Final</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="login-container" id="loginContainer"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        function updateHeader() {
+            let navLinks = document.getElementById('navLinks');
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+            let userEmail = localStorage.getItem('userEmail');
+            
+            if(isLoggedIn === 'true' && userEmail) {
+                let shortEmail = userEmail.split('@')[0];
+                navLinks.innerHTML = `
+                    <div class="user-info">
+                        <span>👤 ${shortEmail}</span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                    <a href="main.html">Home</a>
+                    <a href="subscription.html">Subscribe</a>
+                    <a href="cart.html">Cart</a>
+                    <a href="payment.html">Payment</a>
+                    <a href="final.html">Final</a>
+                `;
+            } else {
+                navLinks.innerHTML = `
+                    <a href="login.html">Login</a>
+                    <a href="main.html">Home</a>
+                    <a href="subscription.html">Subscribe</a>
+                    <a href="cart.html">Cart</a>
+                    <a href="payment.html">Payment</a>
+                    <a href="final.html">Final</a>
+                `;
+            }
+        }
+
+        function showLoginForm() {
+            let container = document.getElementById('loginContainer');
+            let isLoggedIn = localStorage.getItem('isLoggedIn');
+
+            if(isLoggedIn === 'true') {
+                window.location.href = 'main.html';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="login-header">
+                    <h2>Welcome Back!</h2>
+                    <p>Please login to your account</p>
+                </div>
+                <div class="login-form">
+                    <div class="error-message-global" id="globalError"></div>
+                    <div class="success-message" id="successMessage"></div>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="email" placeholder="Enter your email">
+                            <div class="error-message" id="emailError">Please enter a valid email with @</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="password" placeholder="Enter your password">
+                            <div class="error-message" id="passwordError">Password cannot be empty</div>
+                        </div>
+                        <button type="submit" class="login-btn" id="loginBtn">Login</button>
+                    </form>
+                    <div class="login-footer">
+                        <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+                    </div>
+                    <div class="info-text">
+                        🆕 New user? <a href="signup.html">Create an account</a> to start shopping!
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            document.getElementById('globalError').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+            
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            document.getElementById('emailError').classList.remove('show');
+            document.getElementById('passwordError').classList.remove('show');
+            document.getElementById('email').classList.remove('error');
+            document.getElementById('password').classList.remove('error');
+            
+            let isValid = true;
+            
+            // Validate email
+            if(!email || !email.includes('@')) {
+                document.getElementById('emailError').classList.add('show');
+                document.getElementById('email').classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate password
+            if(!password || password.trim() === '') {
+                document.getElementById('passwordError').classList.add('show');
+                document.getElementById('password').classList.add('error');
+                isValid = false;
+            }
+            
+            if(!isValid) return;
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // SAVE ALL USER DATA
+                    localStorage.setItem('userEmail', data.user.email);
+                    localStorage.setItem('userId', data.user.id);
+                    localStorage.setItem('userName', data.user.name);
+                    localStorage.setItem('userMobile', data.user.mobile || '');
+                    localStorage.setItem('userCity', data.user.city || 'Mumbai');
+                    localStorage.setItem('userState', data.user.state || 'Maharashtra');
+                    localStorage.setItem('userPincode', data.user.pincode || '400001');
+                    localStorage.setItem('userAddress', JSON.stringify({
+                        fullName: data.user.name,
+                        mobile: data.user.mobile || '',
+                        city: data.user.city || 'Mumbai',
+                        state: data.user.state || 'Maharashtra',
+                        pincode: data.user.pincode || '400001',
+                        address: data.user.address || ''
+                    }));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    const successMsg = document.getElementById('successMessage');
+                    successMsg.innerHTML = '✅ Login successful! Redirecting...';
+                    successMsg.classList.add('show');
+                    
+                    updateHeader();
+                    
+                    setTimeout(() => {
+                        window.location.href = 'main.html';
+                    }, 1500);
+                } else {
+                    const globalError = document.getElementById('globalError');
+                    globalError.innerHTML = '❌ ' + (data.message || 'Invalid email or password');
+                    globalError.classList.add('show');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                const globalError = document.getElementById('globalError');
+                globalError.innerHTML = '❌ Network error! Make sure backend is running on http://localhost:3000';
+                globalError.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userMobile');
+            localStorage.removeItem('userCity');
+            localStorage.removeItem('userState');
+            localStorage.removeItem('userPincode');
+            localStorage.removeItem('userAddress');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('lastPayment');
+            localStorage.removeItem('lastOrder');
+            updateHeader();
+            showLoginForm();
+        }
+
+        window.onload = function() {
+            updateHeader();
+            showLoginForm();
+        }
+    </script>
+</body>
+</html>
